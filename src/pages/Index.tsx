@@ -1,222 +1,514 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
-const NAV_LINKS = ["Услуги", "О нас", "Портфолио", "Контакты"];
+// ─── Данные ───────────────────────────────────────────────────────────────────
 
-const SERVICES = [
+const NAV_LINKS = [
+  { label: "Квартиры", href: "#apartments" },
+  { label: "Города", href: "#cities" },
+  { label: "О нас", href: "#about" },
+  { label: "Отзывы", href: "#reviews" },
+  { label: "Контакты", href: "#contacts" },
+];
+
+const CITIES = [
   {
-    icon: "Layers",
-    title: "Веб-дизайн",
-    desc: "Создаём уникальные интерфейсы, которые говорят о вашем бренде без слов. Каждый пиксель — намеренный.",
+    id: "sochi",
+    name: "Сочи",
+    icon: "Sun",
+    desc: "Морское побережье, горы и круглогодичный отдых",
+    count: 24,
+    img: "https://images.unsplash.com/photo-1596394723269-b3f33e6f4f66?w=600&q=80",
   },
   {
-    icon: "Code2",
-    title: "Разработка",
-    desc: "Чистый, масштабируемый код. Быстрые сайты и приложения, которые работают безупречно на всех устройствах.",
+    id: "moscow",
+    name: "Москва",
+    icon: "Building2",
+    desc: "Деловой центр страны с бесконечными возможностями",
+    count: 41,
+    img: "https://images.unsplash.com/photo-1513326738677-b964603b136d?w=600&q=80",
   },
   {
-    icon: "TrendingUp",
-    title: "Стратегия",
-    desc: "Анализируем аудиторию, выстраиваем воронку и превращаем посетителей в лояльных клиентов.",
-  },
-  {
-    icon: "Sparkles",
-    title: "Брендинг",
-    desc: "Визуальная идентичность, которая остаётся в памяти. Логотип, типографика, цвета — единая система.",
+    id: "spb",
+    name: "Санкт-Петербург",
+    icon: "Landmark",
+    desc: "Северная столица с уникальной атмосферой и историей",
+    count: 33,
+    img: "https://images.unsplash.com/photo-1548834925-e48f8a1571c1?w=600&q=80",
   },
 ];
 
-const WORKS = [
-  { label: "Проектов", value: "120+" },
-  { label: "Лет опыта", value: "8" },
-  { label: "Клиентов", value: "94%" },
-  { label: "Наград", value: "12" },
+const APARTMENTS = [
+  {
+    id: 1,
+    city: "sochi",
+    cityName: "Сочи",
+    title: "Студия у моря",
+    area: 32,
+    floor: 5,
+    beds: 1,
+    price: 3200,
+    rating: 4.9,
+    reviews: 87,
+    tags: ["Море 5 мин", "Wi-Fi", "Кондиционер"],
+    img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80",
+  },
+  {
+    id: 2,
+    city: "sochi",
+    cityName: "Сочи",
+    title: "Апартаменты с видом на горы",
+    area: 55,
+    floor: 8,
+    beds: 2,
+    price: 5500,
+    rating: 4.8,
+    reviews: 62,
+    tags: ["Горный вид", "Парковка", "Wi-Fi"],
+    img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80",
+  },
+  {
+    id: 3,
+    city: "moscow",
+    cityName: "Москва",
+    title: "Квартира в центре",
+    area: 48,
+    floor: 3,
+    beds: 1,
+    price: 4800,
+    rating: 4.7,
+    reviews: 114,
+    tags: ["Центр", "Метро 3 мин", "Wi-Fi"],
+    img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80",
+  },
+  {
+    id: 4,
+    city: "moscow",
+    cityName: "Москва",
+    title: "Просторные апартаменты",
+    area: 72,
+    floor: 12,
+    beds: 2,
+    price: 7200,
+    rating: 5.0,
+    reviews: 49,
+    tags: ["Панорамный вид", "Джакузи", "Парковка"],
+    img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80",
+  },
+  {
+    id: 5,
+    city: "spb",
+    cityName: "Санкт-Петербург",
+    title: "Квартира у Невского",
+    area: 44,
+    floor: 4,
+    beds: 1,
+    price: 4200,
+    rating: 4.8,
+    reviews: 93,
+    tags: ["Невский проспект", "Исторический центр", "Wi-Fi"],
+    img: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&q=80",
+  },
+  {
+    id: 6,
+    city: "spb",
+    cityName: "Санкт-Петербург",
+    title: "Уютная студия на Петроградке",
+    area: 36,
+    floor: 2,
+    beds: 1,
+    price: 3600,
+    rating: 4.6,
+    reviews: 71,
+    tags: ["Петроградская сторона", "Парк рядом", "Wi-Fi"],
+    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+  },
 ];
+
+const ADVANTAGES = [
+  {
+    icon: "ShieldCheck",
+    title: "Проверенное жильё",
+    desc: "Каждая квартира проходит личный осмотр нашими менеджерами перед публикацией",
+  },
+  {
+    icon: "Banknote",
+    title: "Без скрытых платежей",
+    desc: "Цена, которую вы видите — это финальная цена. Никаких дополнительных комиссий",
+  },
+  {
+    icon: "Clock",
+    title: "Заезд 24/7",
+    desc: "Гибкое время заезда и выезда. Наш менеджер на связи круглосуточно",
+  },
+  {
+    icon: "Headphones",
+    title: "Поддержка всегда",
+    desc: "Личный менеджер сопровождает вас от бронирования до выезда",
+  },
+  {
+    icon: "Award",
+    title: "5 лет на рынке",
+    desc: "Более 10 000 успешных заездов и 98% довольных гостей",
+  },
+  {
+    icon: "CalendarCheck",
+    title: "Мгновенное подтверждение",
+    desc: "Бронирование онлайн — получите подтверждение за несколько секунд",
+  },
+];
+
+const REVIEWS = [
+  {
+    name: "Анна К.",
+    city: "Сочи",
+    rating: 5,
+    text: "Невероятная квартира с видом на море! Всё как на фото, даже лучше. Менеджер встретила нас в 2 ночи без вопросов. Обязательно вернёмся!",
+    date: "Март 2024",
+    avatar: "A",
+  },
+  {
+    name: "Дмитрий П.",
+    city: "Москва",
+    rating: 5,
+    text: "Брал квартиру в центре Москвы на деловую поездку. Всё чисто, уютно, есть всё необходимое. Расположение идеальное — до метро пешком.",
+    date: "Февраль 2024",
+    avatar: "Д",
+  },
+  {
+    name: "Мария С.",
+    city: "Санкт-Петербург",
+    rating: 5,
+    text: "Провели романтические выходные в Питере. Квартира просто сказочная — высокие потолки, лепнина, вид на канал. Спасибо Orange Apart!",
+    date: "Январь 2024",
+    avatar: "М",
+  },
+  {
+    name: "Игорь В.",
+    city: "Сочи",
+    rating: 4,
+    text: "Отличное жильё для семейного отдыха. Двухкомнатная, всё чисто, хорошая кухня. До пляжа 7 минут пешком. Цена абсолютно справедливая.",
+    date: "Декабрь 2023",
+    avatar: "И",
+  },
+];
+
+const STATS = [
+  { value: "98%", label: "Довольных гостей" },
+  { value: "10K+", label: "Заездов завершено" },
+  { value: "3", label: "Города присутствия" },
+  { value: "5 лет", label: "На рынке аренды" },
+];
+
+// ─── Компонент ─────────────────────────────────────────────────────────────────
 
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [activeCity, setActiveCity] = useState<string>("all");
+  const [bookingData, setBookingData] = useState({
+    city: "",
+    checkin: "",
+    checkout: "",
+    guests: "1",
+  });
+
+  const filteredApartments =
+    activeCity === "all"
+      ? APARTMENTS
+      : APARTMENTS.filter((a) => a.city === activeCity);
+
+  const scrollTo = (href: string) => {
+    const el = document.querySelector(href);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+  };
 
   return (
-    <div className="min-h-screen bg-coal font-body text-cream overflow-x-hidden">
+    <div className="min-h-screen bg-white font-body text-dark overflow-x-hidden">
 
-      {/* ─── Декоративный фон ─── */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-gold/5 blur-[120px]" />
-        <div className="absolute bottom-1/3 right-0 w-[400px] h-[400px] rounded-full bg-gold/4 blur-[100px]" />
-        {/* Тонкая сетка */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
+      {/* ─── Шапка навигации ─── */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex items-center justify-between h-16 md:h-18">
+
+            {/* Логотип */}
+            <a href="#" className="flex items-center gap-2.5 group" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+              <div className="w-8 h-8 bg-orange rounded-lg flex items-center justify-center group-hover:bg-orange-dark transition-colors duration-200">
+                <Icon name="Home" size={16} className="text-white" />
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-display font-800 text-lg tracking-tight text-dark">
+                  Orange<span className="text-orange">Apart</span>
+                </span>
+                <span className="text-[9px] tracking-widest uppercase text-slate font-medium">Аренда квартир</span>
+              </div>
+            </a>
+
+            {/* Desktop nav */}
+            <nav className="hidden md:flex items-center gap-7">
+              {NAV_LINKS.map((l) => (
+                <button
+                  key={l.label}
+                  onClick={() => scrollTo(l.href)}
+                  className="text-sm font-medium text-dark/70 hover:text-orange transition-colors duration-200"
+                >
+                  {l.label}
+                </button>
+              ))}
+            </nav>
+
+            <div className="hidden md:flex items-center gap-3">
+              <a href="tel:+78001234567" className="flex items-center gap-2 text-sm font-medium text-dark/70 hover:text-orange transition-colors">
+                <Icon name="Phone" size={15} />
+                8 800 123-45-67
+              </a>
+              <button
+                onClick={() => scrollTo("#apartments")}
+                className="bg-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-dark transition-colors duration-200"
+              >
+                Забронировать
+              </button>
+            </div>
+
+            {/* Mobile burger */}
+            <button
+              className="md:hidden p-2 text-dark rounded-lg hover:bg-slate-light transition-colors"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Меню"
+            >
+              <Icon name={menuOpen ? "X" : "Menu"} size={22} />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 flex flex-col gap-1 animate-fade-in">
+            {NAV_LINKS.map((l) => (
+              <button
+                key={l.label}
+                onClick={() => scrollTo(l.href)}
+                className="text-left px-3 py-2.5 text-sm font-medium text-dark/70 hover:text-orange hover:bg-orange-pale rounded-lg transition-colors"
+              >
+                {l.label}
+              </button>
+            ))}
+            <div className="mt-2 pt-3 border-t border-gray-100 flex flex-col gap-2">
+              <a href="tel:+78001234567" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-dark/70">
+                <Icon name="Phone" size={15} className="text-orange" />
+                8 800 123-45-67
+              </a>
+              <button
+                onClick={() => { scrollTo("#apartments"); setMenuOpen(false); }}
+                className="bg-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-dark transition-colors text-center"
+              >
+                Забронировать
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* ─── HERO ─── */}
+      <section className="relative bg-gradient-to-br from-dark via-dark-mid to-dark-light overflow-hidden min-h-[92vh] flex items-center">
+        {/* Фоновый паттерн */}
+        <div className="absolute inset-0 opacity-10"
           style={{
-            backgroundImage:
-              "linear-gradient(#C9A96E 1px, transparent 1px), linear-gradient(90deg, #C9A96E 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
+            backgroundImage: "radial-gradient(circle at 25% 40%, #FF6B35 0%, transparent 50%), radial-gradient(circle at 75% 60%, #FF8C5A 0%, transparent 50%)"
           }}
         />
-      </div>
-
-      {/* ─── Навигация ─── */}
-      <nav className="relative z-50 flex items-center justify-between px-6 md:px-16 py-6 border-b border-gold/10">
-        <a href="#" className="font-display text-2xl font-light tracking-[0.15em] text-cream">
-          СТУДИЯ
-        </a>
-
-        {/* Desktop nav */}
-        <ul className="hidden md:flex gap-10 text-sm tracking-widest text-cream/60">
-          {NAV_LINKS.map((l) => (
-            <li key={l}>
-              <a
-                href="#"
-                className="relative group uppercase text-xs tracking-[0.2em] hover:text-gold transition-colors duration-300"
-              >
-                {l}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold group-hover:w-full transition-all duration-300" />
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        <button className="hidden md:block text-xs tracking-[0.2em] uppercase border border-gold/40 text-gold px-6 py-2.5 hover:bg-gold hover:text-coal transition-all duration-300">
-          Связаться
-        </button>
-
-        {/* Mobile burger */}
-        <button
-          className="md:hidden text-cream"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Меню"
-        >
-          <Icon name={menuOpen ? "X" : "Menu"} size={24} />
-        </button>
-      </nav>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="relative z-40 bg-coal-mid border-b border-gold/10 px-6 py-6 flex flex-col gap-4 md:hidden animate-fade-in">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l}
-              href="#"
-              className="text-xs tracking-[0.2em] uppercase text-cream/70 hover:text-gold transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {l}
-            </a>
-          ))}
-          <button className="mt-2 text-xs tracking-[0.2em] uppercase border border-gold/40 text-gold px-6 py-2.5 hover:bg-gold hover:text-coal transition-all duration-300 self-start">
-            Связаться
-          </button>
-        </div>
-      )}
-
-      {/* ─── Hero ─── */}
-      <section className="relative z-10 min-h-[90vh] flex flex-col items-center justify-center text-center px-6 pt-20 pb-16">
-        {/* Тег */}
-        <div
-          className="mb-10 inline-flex items-center gap-3 border border-gold/30 px-5 py-2 text-gold/80 text-xs tracking-[0.25em] uppercase opacity-0"
-          style={{ animation: "fade-in 0.8s ease-out 0.2s forwards" }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-          Цифровая студия · Москва
-        </div>
-
-        {/* Заголовок */}
-        <h1
-          className="font-display text-6xl md:text-8xl lg:text-[110px] font-light leading-[0.9] tracking-tight opacity-0 max-w-5xl"
-          style={{ animation: "fade-in 0.9s ease-out 0.4s forwards" }}
-        >
-          Создаём<br />
-          <em className="not-italic text-gold">цифровое</em><br />
-          присутствие
-        </h1>
-
-        {/* Линия */}
-        <div
-          className="my-10 w-0 h-px bg-gold/40 opacity-0"
-          style={{ animation: "line-grow 1s ease-out 0.9s forwards, fade-in-slow 0.1s 0.9s forwards" }}
+        <div className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "60px 60px"
+          }}
         />
 
-        {/* Подзаголовок */}
-        <p
-          className="max-w-lg text-cream/60 text-lg leading-relaxed opacity-0"
-          style={{ animation: "fade-in 0.8s ease-out 1.1s forwards" }}
-        >
-          Мы объединяем стратегию, дизайн и технологии, чтобы ваш бренд
-          занял достойное место в цифровом пространстве.
-        </p>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-20 md:py-28 w-full">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
 
-        {/* CTA */}
-        <div
-          className="mt-12 flex flex-wrap gap-4 justify-center opacity-0"
-          style={{ animation: "fade-in 0.8s ease-out 1.3s forwards" }}
-        >
-          <button className="bg-gold text-coal text-sm tracking-[0.15em] uppercase px-10 py-4 hover:bg-gold-light transition-all duration-300 font-medium">
-            Начать проект
-          </button>
-          <button className="border border-cream/20 text-cream/70 text-sm tracking-[0.15em] uppercase px-10 py-4 hover:border-gold/50 hover:text-gold transition-all duration-300">
-            Смотреть работы
-          </button>
+            {/* Левая колонка — текст */}
+            <div>
+              <div
+                className="inline-flex items-center gap-2 bg-orange/20 border border-orange/30 text-orange text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-full mb-8 opacity-0"
+                style={{ animation: "fade-in 0.6s ease-out 0.2s forwards" }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-orange animate-pulse" />
+                Посуточная аренда квартир
+              </div>
+
+              <h1
+                className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-6 opacity-0"
+                style={{ animation: "fade-in 0.7s ease-out 0.3s forwards" }}
+              >
+                Уютное жильё<br />
+                <span className="text-orange">в любом городе</span><br />
+                России
+              </h1>
+
+              <p
+                className="text-white/60 text-lg leading-relaxed mb-8 max-w-md opacity-0"
+                style={{ animation: "fade-in 0.7s ease-out 0.5s forwards" }}
+              >
+                Сочи, Москва, Санкт-Петербург — выбирайте квартиру как дома.
+                Онлайн-бронирование, проверенные апартаменты, поддержка 24/7.
+              </p>
+
+              <div
+                className="flex flex-wrap gap-3 mb-10 opacity-0"
+                style={{ animation: "fade-in 0.7s ease-out 0.6s forwards" }}
+              >
+                {["Без посредников", "Мгновенное подтверждение", "Заезд 24/7"].map((tag) => (
+                  <span key={tag} className="flex items-center gap-1.5 text-white/70 text-sm">
+                    <Icon name="Check" size={14} className="text-orange" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div
+                className="flex flex-wrap gap-4 opacity-0"
+                style={{ animation: "fade-in 0.7s ease-out 0.7s forwards" }}
+              >
+                <button
+                  onClick={() => scrollTo("#apartments")}
+                  className="bg-orange text-white font-bold px-8 py-4 rounded-xl hover:bg-orange-dark transition-all duration-200 text-base shadow-lg shadow-orange/30 hover:shadow-orange/50 hover:-translate-y-0.5"
+                >
+                  Смотреть квартиры
+                </button>
+                <a
+                  href="tel:+78001234567"
+                  className="flex items-center gap-2 border border-white/20 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-200 text-base"
+                >
+                  <Icon name="Phone" size={18} />
+                  Позвонить
+                </a>
+              </div>
+            </div>
+
+            {/* Правая колонка — форма бронирования */}
+            <div
+              className="opacity-0"
+              style={{ animation: "fade-in 0.8s ease-out 0.5s forwards" }}
+            >
+              <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+                <h3 className="font-display font-bold text-xl text-dark mb-6">
+                  Найти квартиру
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                      Город
+                    </label>
+                    <div className="relative">
+                      <Icon name="MapPin" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
+                      <select
+                        className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange appearance-none cursor-pointer"
+                        value={bookingData.city}
+                        onChange={(e) => setBookingData({ ...bookingData, city: e.target.value })}
+                      >
+                        <option value="">Выберите город</option>
+                        <option value="sochi">Сочи</option>
+                        <option value="moscow">Москва</option>
+                        <option value="spb">Санкт-Петербург</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                        Заезд
+                      </label>
+                      <div className="relative">
+                        <Icon name="Calendar" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
+                        <input
+                          type="date"
+                          className="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange"
+                          value={bookingData.checkin}
+                          onChange={(e) => setBookingData({ ...bookingData, checkin: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                        Выезд
+                      </label>
+                      <div className="relative">
+                        <Icon name="Calendar" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
+                        <input
+                          type="date"
+                          className="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange"
+                          value={bookingData.checkout}
+                          onChange={(e) => setBookingData({ ...bookingData, checkout: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                      Гостей
+                    </label>
+                    <div className="relative">
+                      <Icon name="Users" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
+                      <select
+                        className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange appearance-none cursor-pointer"
+                        value={bookingData.guests}
+                        onChange={(e) => setBookingData({ ...bookingData, guests: e.target.value })}
+                      >
+                        <option value="1">1 гость</option>
+                        <option value="2">2 гостя</option>
+                        <option value="3">3 гостя</option>
+                        <option value="4">4 гостя</option>
+                        <option value="5">5+ гостей</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (bookingData.city) setActiveCity(bookingData.city);
+                      scrollTo("#apartments");
+                    }}
+                    className="w-full bg-orange text-white font-bold py-4 rounded-xl hover:bg-orange-dark transition-all duration-200 text-base mt-2 shadow-lg shadow-orange/20"
+                  >
+                    Найти квартиры
+                  </button>
+                </div>
+
+                <p className="text-center text-xs text-dark/40 mt-4">
+                  Мгновенное подтверждение бронирования
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Скролл-индикатор */}
-        <div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0"
-          style={{ animation: "fade-in 1s ease-out 1.8s forwards" }}
-        >
-          <span className="text-[10px] tracking-[0.3em] uppercase text-cream/30">Скролл</span>
-          <div className="w-px h-10 bg-gradient-to-b from-gold/40 to-transparent animate-float" />
+        {/* Волнистый разделитель */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 60H1440V20C1200 50 960 10 720 30C480 50 240 10 0 20V60Z" fill="white"/>
+          </svg>
         </div>
       </section>
 
       {/* ─── Статистика ─── */}
-      <section className="relative z-10 border-y border-gold/10 py-12 px-6 md:px-16">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {WORKS.map((w, i) => (
-            <div
-              key={w.label}
-              className="text-center opacity-0"
-              style={{ animation: `fade-in 0.7s ease-out ${0.1 * i + 0.3}s forwards` }}
-            >
-              <div className="font-display text-5xl md:text-6xl font-light text-gold">{w.value}</div>
-              <div className="mt-1 text-xs tracking-[0.2em] uppercase text-cream/40">{w.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── Услуги ─── */}
-      <section className="relative z-10 py-28 px-6 md:px-16">
-        <div className="max-w-5xl mx-auto">
-          {/* Заголовок блока */}
-          <div className="flex items-end justify-between mb-16 flex-wrap gap-6">
-            <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-gold/70 mb-4">— Что мы делаем</p>
-              <h2 className="font-display text-5xl md:text-6xl font-light leading-tight">
-                Полный<br />спектр услуг
-              </h2>
-            </div>
-            <p className="max-w-xs text-cream/50 text-sm leading-relaxed">
-              От стратегии до запуска — берём на себя все этапы создания вашего цифрового продукта.
-            </p>
-          </div>
-
-          {/* Карточки */}
-          <div className="grid md:grid-cols-2 gap-px bg-gold/10">
-            {SERVICES.map((s, i) => (
+      <section className="py-12 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {STATS.map((s, i) => (
               <div
-                key={s.title}
-                className="group bg-coal p-10 hover:bg-coal-light transition-colors duration-500 cursor-default opacity-0"
-                style={{ animation: `fade-in 0.7s ease-out ${0.15 * i + 0.2}s forwards` }}
+                key={s.label}
+                className="text-center opacity-0"
+                style={{ animation: `fade-in 0.6s ease-out ${0.1 * i + 0.2}s forwards` }}
               >
-                <div className="mb-6 w-10 h-10 border border-gold/30 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/10 transition-all duration-300">
-                  <Icon name={s.icon} fallback="Sparkles" size={18} className="text-gold" />
+                <div className="font-display text-3xl md:text-4xl font-extrabold text-orange mb-1">
+                  {s.value}
                 </div>
-                <h3 className="font-display text-2xl font-light mb-3 group-hover:text-gold transition-colors duration-300">
-                  {s.title}
-                </h3>
-                <p className="text-cream/50 text-sm leading-relaxed">{s.desc}</p>
-                <div className="mt-8 flex items-center gap-2 text-gold/0 group-hover:text-gold/70 transition-all duration-300 text-xs tracking-widest uppercase">
-                  Подробнее <Icon name="ArrowRight" size={14} />
+                <div className="text-xs md:text-sm text-dark/50 font-medium">
+                  {s.label}
                 </div>
               </div>
             ))}
@@ -224,113 +516,592 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ─── Цитата / философия ─── */}
-      <section className="relative z-10 py-24 px-6 md:px-16 border-y border-gold/10 overflow-hidden">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 font-display text-[200px] font-light text-gold/3 select-none leading-none pointer-events-none">
-          &ldquo;
-        </div>
-        <div className="max-w-3xl mx-auto text-center relative">
-          <blockquote className="font-display text-3xl md:text-4xl font-light leading-relaxed text-cream/90 italic">
-            «Хороший дизайн — это не то, как вещь выглядит,
-            а то, как она работает.»
-          </blockquote>
-          <cite className="mt-6 block text-xs tracking-[0.3em] uppercase text-gold/60 not-italic">
-            — Стив Джобс
-          </cite>
+      {/* ─── Города ─── */}
+      <section id="cities" className="py-20 bg-slate-soft">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+              Наши города
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-dark mb-4">
+              Где вас ждут наши квартиры
+            </h2>
+            <p className="text-dark/50 max-w-xl mx-auto text-base">
+              Три популярных города России с богатым выбором проверенных апартаментов для любого бюджета
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {CITIES.map((city, i) => (
+              <div
+                key={city.id}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer opacity-0 hover:-translate-y-1 transition-all duration-300"
+                style={{ animation: `fade-in 0.6s ease-out ${0.15 * i + 0.2}s forwards` }}
+                onClick={() => {
+                  setActiveCity(city.id);
+                  scrollTo("#apartments");
+                }}
+              >
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={city.img}
+                    alt={city.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-display font-bold text-2xl text-white">{city.name}</h3>
+                    <span className="bg-orange text-white text-xs font-bold px-3 py-1 rounded-full">
+                      {city.count} квартир
+                    </span>
+                  </div>
+                  <p className="text-white/70 text-sm leading-relaxed">{city.desc}</p>
+                  <div className="mt-4 flex items-center gap-2 text-orange text-sm font-semibold group-hover:gap-3 transition-all">
+                    Смотреть квартиры
+                    <Icon name="ArrowRight" size={16} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ─── Контакты ─── */}
-      <section className="relative z-10 py-28 px-6 md:px-16" id="contact">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-start">
-          {/* Левый блок */}
-          <div>
-            <p className="text-xs tracking-[0.3em] uppercase text-gold/70 mb-4">— Начнём?</p>
-            <h2 className="font-display text-5xl md:text-6xl font-light leading-tight mb-8">
-              Расскажите<br />о проекте
-            </h2>
-            <p className="text-cream/50 text-sm leading-relaxed mb-10">
-              Опишите вашу задачу — мы свяжемся в течение одного рабочего дня и предложим
-              оптимальное решение.
-            </p>
+      {/* ─── Каталог квартир ─── */}
+      <section id="apartments" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+                Каталог квартир
+              </p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-dark">
+                Выберите идеальные апартаменты
+              </h2>
+            </div>
 
-            <div className="space-y-5">
+            {/* Фильтры по городам */}
+            <div className="flex flex-wrap gap-2">
               {[
-                { icon: "Mail", label: "hello@studio.ru" },
-                { icon: "Phone", label: "+7 (999) 000-00-00" },
-                { icon: "MapPin", label: "Москва, Россия" },
-              ].map((c) => (
-                <div key={c.label} className="flex items-center gap-4 text-cream/60 text-sm hover:text-gold transition-colors cursor-pointer group">
-                  <div className="w-9 h-9 border border-gold/20 flex items-center justify-center group-hover:border-gold/60 transition-colors">
-                    <Icon name={c.icon} fallback="Circle" size={15} className="text-gold/60 group-hover:text-gold transition-colors" />
-                  </div>
-                  {c.label}
-                </div>
+                { id: "all", label: "Все города" },
+                { id: "sochi", label: "Сочи" },
+                { id: "moscow", label: "Москва" },
+                { id: "spb", label: "Санкт-Петербург" },
+              ].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveCity(f.id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activeCity === f.id
+                      ? "bg-orange text-white shadow-md shadow-orange/25"
+                      : "bg-slate-light text-dark/60 hover:bg-orange-pale hover:text-orange"
+                  }`}
+                >
+                  {f.label}
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Форма */}
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-            {[
-              { id: "name", label: "Ваше имя", type: "text", placeholder: "Иван Иванов" },
-              { id: "email", label: "Email", type: "email", placeholder: "ivan@company.ru" },
-            ].map((f) => (
-              <div key={f.id} className="relative group">
-                <label className="block text-[10px] tracking-[0.25em] uppercase text-cream/40 mb-2">
-                  {f.label}
-                </label>
-                <input
-                  type={f.type}
-                  placeholder={f.placeholder}
-                  className="w-full bg-transparent border border-gold/20 px-4 py-3.5 text-sm text-cream placeholder:text-cream/25 focus:outline-none focus:border-gold/60 hover:border-gold/35 transition-colors duration-300"
-                  value={formData[f.id as keyof typeof formData]}
-                  onChange={(e) => setFormData({ ...formData, [f.id]: e.target.value })}
-                />
+          {/* Карточки квартир */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredApartments.map((apt, i) => (
+              <div
+                key={apt.id}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                style={{ animation: `fade-in 0.5s ease-out ${0.1 * i}s forwards` }}
+              >
+                {/* Фото */}
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img
+                    src={apt.img}
+                    alt={apt.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-white/95 backdrop-blur-sm text-orange text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                      {apt.cityName}
+                    </span>
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-dark/70 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1">
+                      <Icon name="Star" size={11} className="text-yellow-400 fill-yellow-400" />
+                      {apt.rating}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Информация */}
+                <div className="p-5">
+                  <h3 className="font-display font-bold text-lg text-dark mb-2 group-hover:text-orange transition-colors">
+                    {apt.title}
+                  </h3>
+
+                  {/* Характеристики */}
+                  <div className="flex items-center gap-4 text-sm text-dark/50 mb-3">
+                    <span className="flex items-center gap-1.5">
+                      <Icon name="Maximize2" size={13} className="text-orange" />
+                      {apt.area} м²
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Icon name="BedDouble" size={13} className="text-orange" />
+                      {apt.beds === 1 ? "Студия" : `${apt.beds} спальни`}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Icon name="Building" size={13} className="text-orange" />
+                      {apt.floor} этаж
+                    </span>
+                  </div>
+
+                  {/* Теги */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {apt.tags.map((tag) => (
+                      <span key={tag} className="bg-orange-pale text-orange text-xs font-medium px-2.5 py-1 rounded-lg">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Цена и кнопка */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div>
+                      <span className="font-bold text-xl text-dark">{apt.price.toLocaleString()} ₽</span>
+                      <span className="text-dark/40 text-sm"> / сутки</span>
+                    </div>
+                    <button className="bg-orange text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-orange-dark transition-colors duration-200">
+                      Забронировать
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
 
-            <div className="relative">
-              <label className="block text-[10px] tracking-[0.25em] uppercase text-cream/40 mb-2">
-                Сообщение
-              </label>
-              <textarea
-                rows={5}
-                placeholder="Расскажите о вашем проекте..."
-                className="w-full bg-transparent border border-gold/20 px-4 py-3.5 text-sm text-cream placeholder:text-cream/25 focus:outline-none focus:border-gold/60 hover:border-gold/35 transition-colors duration-300 resize-none"
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              />
+          {filteredApartments.length === 0 && (
+            <div className="text-center py-16 text-dark/40">
+              <Icon name="Search" size={48} className="mx-auto mb-4 opacity-30" />
+              <p className="text-lg">Квартиры не найдены</p>
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gold text-coal text-xs tracking-[0.25em] uppercase py-4 font-medium hover:bg-gold-light transition-all duration-300 flex items-center justify-center gap-2 group"
-            >
-              Отправить заявку
-              <Icon name="ArrowRight" size={15} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
+          )}
         </div>
       </section>
 
-      {/* ─── Footer ─── */}
-      <footer className="relative z-10 border-t border-gold/10 py-8 px-6 md:px-16">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="font-display text-lg tracking-[0.15em] text-cream/40">СТУДИЯ</span>
-          <p className="text-[11px] tracking-[0.15em] text-cream/25 uppercase">
-            © {new Date().getFullYear()} — Все права защищены
-          </p>
-          <div className="flex gap-6">
-            {["Instagram", "Telegram", "Behance"].map((s) => (
-              <a
-                key={s}
-                href="#"
-                className="text-[11px] tracking-[0.15em] uppercase text-cream/30 hover:text-gold transition-colors"
+      {/* ─── О компании / Преимущества ─── */}
+      <section id="about" className="py-20 bg-slate-soft">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
+            {/* Текст */}
+            <div>
+              <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+                О компании
+              </p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-dark mb-6">
+                5 лет помогаем гостям<br />
+                чувствовать себя <span className="text-orange">как дома</span>
+              </h2>
+              <p className="text-dark/60 text-base leading-relaxed mb-5">
+                Orange Apart — это сервис посуточной аренды квартир в Сочи, Москве и Санкт-Петербурге.
+                Мы работаем напрямую с собственниками, тщательно проверяем каждый объект и обеспечиваем
+                гостям комфортное проживание без сюрпризов.
+              </p>
+              <p className="text-dark/60 text-base leading-relaxed mb-8">
+                За 5 лет работы мы завершили более 10 000 заездов и заслужили доверие тысяч путешественников
+                по всей России. Наша команда на связи 24/7, чтобы каждое ваше путешествие было незабываемым.
+              </p>
+              <div className="flex flex-wrap gap-6">
+                {[
+                  { icon: "MapPin", text: "Сочи, Москва, СПб" },
+                  { icon: "Users", text: "Более 10 000 гостей" },
+                  { icon: "Star", text: "Рейтинг 4.9 из 5" },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-center gap-2 text-dark/70 text-sm font-medium">
+                    <div className="w-8 h-8 bg-orange-pale rounded-lg flex items-center justify-center">
+                      <Icon name={item.icon} size={15} className="text-orange" />
+                    </div>
+                    {item.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Изображение */}
+            <div className="relative">
+              <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
+                <img
+                  src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80"
+                  alt="Orange Apart — уютные квартиры"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Карточка поверх */}
+              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl p-5 flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Icon name="TrendingUp" size={22} className="text-white" />
+                </div>
+                <div>
+                  <div className="font-bold text-xl text-dark">98%</div>
+                  <div className="text-xs text-dark/50 font-medium">Довольных гостей</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Преимущества */}
+          <div>
+            <div className="text-center mb-12">
+              <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+                Наши преимущества
+              </p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-dark">
+                Почему выбирают Orange Apart
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ADVANTAGES.map((adv, i) => (
+                <div
+                  key={adv.title}
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 opacity-0"
+                  style={{ animation: `fade-in 0.6s ease-out ${0.1 * i + 0.2}s forwards` }}
+                >
+                  <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center mb-4">
+                    <Icon name={adv.icon} size={22} className="text-orange" />
+                  </div>
+                  <h3 className="font-display font-bold text-base text-dark mb-2">
+                    {adv.title}
+                  </h3>
+                  <p className="text-dark/55 text-sm leading-relaxed">
+                    {adv.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Отзывы ─── */}
+      <section id="reviews" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+              Отзывы гостей
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-dark mb-4">
+              Что говорят наши гости
+            </h2>
+            <div className="flex items-center justify-center gap-2">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Icon key={s} name="Star" size={18} className="text-yellow-400 fill-yellow-400" />
+                ))}
+              </div>
+              <span className="font-bold text-dark text-lg">4.9</span>
+              <span className="text-dark/40 text-sm">из 5 • более 400 отзывов</span>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {REVIEWS.map((review, i) => (
+              <div
+                key={review.name}
+                className="bg-slate-soft rounded-2xl p-6 hover:shadow-md transition-all duration-300 opacity-0"
+                style={{ animation: `fade-in 0.6s ease-out ${0.15 * i + 0.2}s forwards` }}
               >
-                {s}
-              </a>
+                {/* Рейтинг */}
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: review.rating }).map((_, j) => (
+                    <Icon key={j} name="Star" size={14} className="text-yellow-400 fill-yellow-400" />
+                  ))}
+                </div>
+
+                {/* Текст */}
+                <p className="text-dark/70 text-sm leading-relaxed mb-5 italic">
+                  «{review.text}»
+                </p>
+
+                {/* Автор */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    {review.avatar}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-dark">{review.name}</div>
+                    <div className="text-xs text-dark/40 flex items-center gap-1.5">
+                      <Icon name="MapPin" size={11} className="text-orange" />
+                      {review.city} · {review.date}
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA Баннер ─── */}
+      <section className="py-20 bg-gradient-to-r from-orange-dark via-orange to-orange-light relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: "radial-gradient(circle at 20% 50%, white 0%, transparent 50%), radial-gradient(circle at 80% 50%, white 0%, transparent 50%)"
+          }}
+        />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8 text-center">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+            Готовы к путешествию?
+          </h2>
+          <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
+            Забронируйте квартиру прямо сейчас и получите подтверждение мгновенно.
+            Наш менеджер на связи 24/7.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <button
+              onClick={() => scrollTo("#apartments")}
+              className="bg-white text-orange font-bold px-8 py-4 rounded-xl hover:bg-white/90 transition-colors duration-200 text-base shadow-lg"
+            >
+              Выбрать квартиру
+            </button>
+            <a
+              href="tel:+78001234567"
+              className="flex items-center gap-2 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-200 text-base"
+            >
+              <Icon name="Phone" size={18} />
+              8 800 123-45-67
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Контакты ─── */}
+      <section id="contacts" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <p className="text-orange font-semibold text-sm uppercase tracking-wider mb-3">
+              Контакты
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-dark">
+              Свяжитесь с нами
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Контактная информация */}
+            <div className="space-y-6">
+              {[
+                {
+                  icon: "Phone",
+                  title: "Телефон",
+                  value: "8 800 123-45-67",
+                  sub: "Бесплатно по России, 24/7",
+                  href: "tel:+78001234567",
+                },
+                {
+                  icon: "Mail",
+                  title: "Email",
+                  value: "hello@orangeapart.ru",
+                  sub: "Ответим в течение часа",
+                  href: "mailto:hello@orangeapart.ru",
+                },
+                {
+                  icon: "MessageCircle",
+                  title: "Telegram",
+                  value: "@orangeapart",
+                  sub: "Быстрые ответы в мессенджере",
+                  href: "https://t.me/orangeapart",
+                },
+                {
+                  icon: "MapPin",
+                  title: "Офис",
+                  value: "Москва, Тверская ул., 15",
+                  sub: "Пн–Пт: 9:00–20:00",
+                  href: "#",
+                },
+              ].map((contact) => (
+                <a
+                  key={contact.title}
+                  href={contact.href}
+                  className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+                >
+                  <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange group-hover:text-white transition-all duration-200">
+                    <Icon name={contact.icon} size={20} className="text-orange group-hover:text-white transition-colors" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">
+                      {contact.title}
+                    </div>
+                    <div className="font-semibold text-dark group-hover:text-orange transition-colors">
+                      {contact.value}
+                    </div>
+                    <div className="text-sm text-dark/50">{contact.sub}</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            {/* Форма обратной связи */}
+            <div className="bg-slate-soft rounded-2xl p-8">
+              <h3 className="font-display font-bold text-xl text-dark mb-6">
+                Оставьте заявку
+              </h3>
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                      Имя
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ваше имя"
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                      Телефон
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="+7 (___) ___-__-__"
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                    Город
+                  </label>
+                  <select className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all appearance-none">
+                    <option value="">Выберите город</option>
+                    <option>Сочи</option>
+                    <option>Москва</option>
+                    <option>Санкт-Петербург</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                    Сообщение
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Расскажите о ваших пожеланиях..."
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-orange text-white font-bold py-4 rounded-xl hover:bg-orange-dark transition-colors duration-200 text-base shadow-lg shadow-orange/20"
+                >
+                  Отправить заявку
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Футер ─── */}
+      <footer className="bg-dark py-12 text-white/60">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="grid md:grid-cols-4 gap-8 pb-10 border-b border-white/10">
+
+            {/* Логотип и описание */}
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 bg-orange rounded-lg flex items-center justify-center">
+                  <Icon name="Home" size={16} className="text-white" />
+                </div>
+                <span className="font-display font-bold text-lg text-white">
+                  Orange<span className="text-orange">Apart</span>
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed mb-5">
+                Посуточная аренда квартир в Сочи, Москве и Санкт-Петербурге.
+                Проверенные апартаменты, поддержка 24/7.
+              </p>
+              <div className="flex gap-3">
+                {[
+                  { icon: "Send", href: "https://t.me/orangeapart" },
+                  { icon: "Instagram", href: "#" },
+                  { icon: "Phone", href: "tel:+78001234567" },
+                ].map((s) => (
+                  <a
+                    key={s.icon}
+                    href={s.href}
+                    className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-orange transition-colors duration-200"
+                  >
+                    <Icon name={s.icon} size={15} />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Квартиры */}
+            <div>
+              <h4 className="font-display font-bold text-white text-sm mb-4">Квартиры</h4>
+              <ul className="space-y-2.5">
+                {["Сочи", "Москва", "Санкт-Петербург", "Все города"].map((item) => (
+                  <li key={item}>
+                    <button
+                      onClick={() => scrollTo("#apartments")}
+                      className="text-sm hover:text-orange transition-colors text-left"
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Компания */}
+            <div>
+              <h4 className="font-display font-bold text-white text-sm mb-4">Компания</h4>
+              <ul className="space-y-2.5">
+                {["О нас", "Преимущества", "Отзывы", "Контакты"].map((item) => (
+                  <li key={item}>
+                    <button className="text-sm hover:text-orange transition-colors text-left">
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Контакты */}
+            <div>
+              <h4 className="font-display font-bold text-white text-sm mb-4">Контакты</h4>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2 text-sm">
+                  <Icon name="Phone" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <a href="tel:+78001234567" className="hover:text-orange transition-colors">8 800 123-45-67</a>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Icon name="Mail" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <a href="mailto:hello@orangeapart.ru" className="hover:text-orange transition-colors">hello@orangeapart.ru</a>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Icon name="MapPin" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <span>Москва, Тверская ул., 15</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Icon name="Clock" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <span>Поддержка 24/7</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Подвал */}
+          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/30">
+            <p>© 2024 Orange Apart. Все права защищены.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-orange transition-colors">Политика конфиденциальности</a>
+              <a href="#" className="hover:text-orange transition-colors">Условия аренды</a>
+            </div>
           </div>
         </div>
       </footer>

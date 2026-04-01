@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				display: ['"Cormorant Garamond"', 'serif'],
-				body: ['"Golos Text"', 'sans-serif'],
+				display: ['"Montserrat"', 'sans-serif'],
+				body: ['"Inter"', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -57,19 +57,21 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				gold: {
-					DEFAULT: '#C9A96E',
-					light: '#E8D5A3',
-					dark: '#A07840',
+				orange: {
+					DEFAULT: '#FF6B35',
+					light: '#FF8C5A',
+					dark: '#E5501A',
+					pale: '#FFF0EA',
 				},
-				coal: {
-					DEFAULT: '#1A1612',
-					mid: '#241F19',
-					light: '#2E2820',
+				dark: {
+					DEFAULT: '#1C1C1E',
+					mid: '#2C2C2E',
+					light: '#3A3A3C',
 				},
-				cream: {
-					DEFAULT: '#F5EDD8',
-					soft: '#FAF6EC',
+				slate: {
+					DEFAULT: '#8E8E93',
+					light: '#F2F2F7',
+					soft: '#FAFAFA',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -97,29 +99,34 @@ export default {
 					to: { height: '0' }
 				},
 				'fade-in': {
-					from: { opacity: '0', transform: 'translateY(24px)' },
+					from: { opacity: '0', transform: 'translateY(20px)' },
 					to: { opacity: '1', transform: 'translateY(0)' }
 				},
 				'fade-in-slow': {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
 				},
-				'line-grow': {
-					from: { width: '0%' },
-					to: { width: '100%' }
+				'slide-up': {
+					from: { opacity: '0', transform: 'translateY(40px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
 				},
 				'float': {
 					'0%, 100%': { transform: 'translateY(0px)' },
-					'50%': { transform: 'translateY(-8px)' }
+					'50%': { transform: 'translateY(-6px)' }
+				},
+				'pulse-orange': {
+					'0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 107, 53, 0.4)' },
+					'50%': { boxShadow: '0 0 0 8px rgba(255, 107, 53, 0)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.8s ease-out forwards',
-				'fade-in-slow': 'fade-in-slow 1.2s ease-out forwards',
-				'line-grow': 'line-grow 1s ease-out forwards',
-				'float': 'float 6s ease-in-out infinite',
+				'fade-in': 'fade-in 0.6s ease-out forwards',
+				'fade-in-slow': 'fade-in-slow 1s ease-out forwards',
+				'slide-up': 'slide-up 0.7s ease-out forwards',
+				'float': 'float 4s ease-in-out infinite',
+				'pulse-orange': 'pulse-orange 2s ease-in-out infinite',
 			}
 		}
 	},
