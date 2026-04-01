@@ -33,6 +33,17 @@
 <body>
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
+<script type="module" src="https://homereserve.ru/widget.js"></script>
+<script type="module">
+  function initWidget() {
+    if (window.homereserve && window.homereserve.initWidgetSearch) {
+      window.homereserve.initWidgetSearch({"token":"luXPRdtb8v","apartments":[280990,247938,293675,264931,276507,252248,292415,269603,282644,177620,286653,201077,290584,281003,278005,145116,273018,282707,150138,150150,150135,267968,189535,316497,328846,339280,339281,315718,293593,316514,322708,316493,339498,318590,316491,311665,315845,328831,276607,168879,222122,233837,282635,282634,178559,225568,225755,188142,259270,165465,148206,148274,150753,154368,166160,160466,137619,141370,281865,138459,170009,141369,173656,322712,254120,212412,273000,302059],"tag":"Сайт"});
+    } else {
+      setTimeout(initWidget, 300);
+    }
+  }
+  initWidget();
+</script>
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">

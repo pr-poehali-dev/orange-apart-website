@@ -17,7 +17,7 @@ const CITIES = [
     name: "Сочи",
     icon: "Sun",
     desc: "Морское побережье, горы и круглогодичный отдых",
-    count: 24,
+    count: 50,
     img: "https://images.unsplash.com/photo-1596394723269-b3f33e6f4f66?w=600&q=80",
   },
   {
@@ -25,7 +25,7 @@ const CITIES = [
     name: "Москва",
     icon: "Building2",
     desc: "Деловой центр страны с бесконечными возможностями",
-    count: 41,
+    count: 7,
     img: "https://images.unsplash.com/photo-1513326738677-b964603b136d?w=600&q=80",
   },
   {
@@ -139,7 +139,7 @@ const ADVANTAGES = [
   {
     icon: "Clock",
     title: "Заезд 24/7",
-    desc: "Гибкое время заезда и выезда. Наш менеджер на связи круглосуточно",
+    desc: "Гибкое время заезда и выезда",
   },
   {
     icon: "Headphones",
@@ -205,12 +205,8 @@ const STATS = [
 export default function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeCity, setActiveCity] = useState<string>("all");
-  const [bookingData, setBookingData] = useState({
-    city: "",
-    checkin: "",
-    checkout: "",
-    guests: "1",
-  });
+  const [formData, setFormData] = useState({ name: "", phone: "", city: "", message: "" });
+  const [formStatus, setFormStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const filteredApartments =
     activeCity === "all"
@@ -221,6 +217,30 @@ export default function Index() {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus("sending");
+    try {
+      const body = `Новая заявка с сайта OrangeApart%0A%0AИмя: ${encodeURIComponent(formData.name)}%0AТелефон: ${encodeURIComponent(formData.phone)}%0AГород: ${encodeURIComponent(formData.city)}%0AСообщение: ${encodeURIComponent(formData.message)}`;
+      await fetch(`https://formsubmit.co/ajax/orangeapart@mail.ru`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          city: formData.city,
+          message: formData.message,
+          _subject: "Новая заявка с сайта OrangeApart",
+          _captcha: "false",
+        }),
+      });
+      setFormStatus("sent");
+      setFormData({ name: "", phone: "", city: "", message: "" });
+    } catch {
+      setFormStatus("error");
+    }
   };
 
   return (
@@ -258,9 +278,9 @@ export default function Index() {
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
-              <a href="tel:+78001234567" className="flex items-center gap-2 text-sm font-medium text-dark/70 hover:text-orange transition-colors">
+              <a href="tel:+79002379757" className="flex items-center gap-2 text-sm font-medium text-dark/70 hover:text-orange transition-colors">
                 <Icon name="Phone" size={15} />
-                8 800 123-45-67
+                8(900) 237-97-57
               </a>
               <button
                 onClick={() => scrollTo("#apartments")}
@@ -294,9 +314,9 @@ export default function Index() {
               </button>
             ))}
             <div className="mt-2 pt-3 border-t border-gray-100 flex flex-col gap-2">
-              <a href="tel:+78001234567" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-dark/70">
+              <a href="tel:+79002379757" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-dark/70">
                 <Icon name="Phone" size={15} className="text-orange" />
-                8 800 123-45-67
+                8(900) 237-97-57
               </a>
               <button
                 onClick={() => { scrollTo("#apartments"); setMenuOpen(false); }}
@@ -351,7 +371,7 @@ export default function Index() {
                 style={{ animation: "fade-in 0.7s ease-out 0.5s forwards" }}
               >
                 Сочи, Москва, Санкт-Петербург — выбирайте квартиру как дома.
-                Онлайн-бронирование, проверенные апартаменты, поддержка 24/7.
+                Онлайн-бронирование, проверенные апартаменты, поддержка менеджера.
               </p>
 
               <div
@@ -377,7 +397,7 @@ export default function Index() {
                   Смотреть квартиры
                 </button>
                 <a
-                  href="tel:+78001234567"
+                  href="tel:+79002379757"
                   className="flex items-center gap-2 border border-white/20 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-200 text-base"
                 >
                   <Icon name="Phone" size={18} />
@@ -386,102 +406,13 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Правая колонка — форма бронирования */}
+            {/* Правая колонка — виджет бронирования */}
             <div
+              id="booking-widget"
               className="opacity-0"
               style={{ animation: "fade-in 0.8s ease-out 0.5s forwards" }}
             >
-              <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8">
-                <h3 className="font-display font-bold text-xl text-dark mb-6">
-                  Найти квартиру
-                </h3>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                      Город
-                    </label>
-                    <div className="relative">
-                      <Icon name="MapPin" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
-                      <select
-                        className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange appearance-none cursor-pointer"
-                        value={bookingData.city}
-                        onChange={(e) => setBookingData({ ...bookingData, city: e.target.value })}
-                      >
-                        <option value="">Выберите город</option>
-                        <option value="sochi">Сочи</option>
-                        <option value="moscow">Москва</option>
-                        <option value="spb">Санкт-Петербург</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                        Заезд
-                      </label>
-                      <div className="relative">
-                        <Icon name="Calendar" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
-                        <input
-                          type="date"
-                          className="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange"
-                          value={bookingData.checkin}
-                          onChange={(e) => setBookingData({ ...bookingData, checkin: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                        Выезд
-                      </label>
-                      <div className="relative">
-                        <Icon name="Calendar" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
-                        <input
-                          type="date"
-                          className="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange"
-                          value={bookingData.checkout}
-                          onChange={(e) => setBookingData({ ...bookingData, checkout: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                      Гостей
-                    </label>
-                    <div className="relative">
-                      <Icon name="Users" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange" />
-                      <select
-                        className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-dark bg-slate-soft focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange appearance-none cursor-pointer"
-                        value={bookingData.guests}
-                        onChange={(e) => setBookingData({ ...bookingData, guests: e.target.value })}
-                      >
-                        <option value="1">1 гость</option>
-                        <option value="2">2 гостя</option>
-                        <option value="3">3 гостя</option>
-                        <option value="4">4 гостя</option>
-                        <option value="5">5+ гостей</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (bookingData.city) setActiveCity(bookingData.city);
-                      scrollTo("#apartments");
-                    }}
-                    className="w-full bg-orange text-white font-bold py-4 rounded-xl hover:bg-orange-dark transition-all duration-200 text-base mt-2 shadow-lg shadow-orange/20"
-                  >
-                    Найти квартиры
-                  </button>
-                </div>
-
-                <p className="text-center text-xs text-dark/40 mt-4">
-                  Мгновенное подтверждение бронирования
-                </p>
-              </div>
+              <div id="hr-widget"></div>
             </div>
           </div>
         </div>
@@ -664,15 +595,10 @@ export default function Index() {
                     ))}
                   </div>
 
-                  {/* Цена и кнопка */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div>
-                      <span className="font-bold text-xl text-dark">{apt.price.toLocaleString()} ₽</span>
-                      <span className="text-dark/40 text-sm"> / сутки</span>
-                    </div>
-                    <button className="bg-orange text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-orange-dark transition-colors duration-200">
-                      Забронировать
-                    </button>
+                  {/* Цена */}
+                  <div className="pt-3 border-t border-gray-100">
+                    <span className="font-bold text-xl text-dark">{apt.price.toLocaleString()} ₽</span>
+                    <span className="text-dark/40 text-sm"> / сутки</span>
                   </div>
                 </div>
               </div>
@@ -854,21 +780,20 @@ export default function Index() {
           </h2>
           <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
             Забронируйте квартиру прямо сейчас и получите подтверждение мгновенно.
-            Наш менеджер на связи 24/7.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <button
-              onClick={() => scrollTo("#apartments")}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="bg-white text-orange font-bold px-8 py-4 rounded-xl hover:bg-white/90 transition-colors duration-200 text-base shadow-lg"
             >
               Выбрать квартиру
             </button>
             <a
-              href="tel:+78001234567"
+              href="tel:+79002379757"
               className="flex items-center gap-2 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all duration-200 text-base"
             >
               <Icon name="Phone" size={18} />
-              8 800 123-45-67
+              8(900) 237-97-57
             </a>
           </div>
         </div>
@@ -888,56 +813,82 @@ export default function Index() {
 
           <div className="grid md:grid-cols-2 gap-12">
             {/* Контактная информация */}
-            <div className="space-y-6">
-              {[
-                {
-                  icon: "Phone",
-                  title: "Телефон",
-                  value: "8 800 123-45-67",
-                  sub: "Бесплатно по России, 24/7",
-                  href: "tel:+78001234567",
-                },
-                {
-                  icon: "Mail",
-                  title: "Email",
-                  value: "hello@orangeapart.ru",
-                  sub: "Ответим в течение часа",
-                  href: "mailto:hello@orangeapart.ru",
-                },
-                {
-                  icon: "MessageCircle",
-                  title: "Telegram",
-                  value: "@orangeapart",
-                  sub: "Быстрые ответы в мессенджере",
-                  href: "https://t.me/orangeapart",
-                },
-                {
-                  icon: "MapPin",
-                  title: "Офис",
-                  value: "Москва, Тверская ул., 15",
-                  sub: "Пн–Пт: 9:00–20:00",
-                  href: "#",
-                },
-              ].map((contact) => (
-                <a
-                  key={contact.title}
-                  href={contact.href}
-                  className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
-                >
-                  <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange group-hover:text-white transition-all duration-200">
-                    <Icon name={contact.icon} size={20} className="text-orange group-hover:text-white transition-colors" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">
-                      {contact.title}
-                    </div>
-                    <div className="font-semibold text-dark group-hover:text-orange transition-colors">
-                      {contact.value}
-                    </div>
-                    <div className="text-sm text-dark/50">{contact.sub}</div>
-                  </div>
-                </a>
-              ))}
+            <div className="space-y-4">
+              {/* Телефон */}
+              <a
+                href="tel:+79002379757"
+                className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+              >
+                <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange transition-all duration-200">
+                  <Icon name="Phone" size={20} className="text-orange group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">Телефон</div>
+                  <div className="font-semibold text-dark group-hover:text-orange transition-colors">8(900) 237-97-57</div>
+                </div>
+              </a>
+
+              {/* Email */}
+              <a
+                href="mailto:orangeapart@mail.ru"
+                className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+              >
+                <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange transition-all duration-200">
+                  <Icon name="Mail" size={20} className="text-orange group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">Email</div>
+                  <div className="font-semibold text-dark group-hover:text-orange transition-colors">orangeapart@mail.ru</div>
+                </div>
+              </a>
+
+              {/* Telegram скрытый */}
+              <a
+                href="https://t.me/orangeapartsochi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+              >
+                <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange transition-all duration-200">
+                  <Icon name="Send" size={20} className="text-orange group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">Telegram</div>
+                  <div className="font-semibold text-dark group-hover:text-orange transition-colors">Написать в Telegram</div>
+                </div>
+              </a>
+
+              {/* WhatsApp */}
+              <a
+                href="https://wa.me/79002379757"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+              >
+                <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange transition-all duration-200">
+                  <Icon name="MessageCircle" size={20} className="text-orange group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">WhatsApp</div>
+                  <div className="font-semibold text-dark group-hover:text-orange transition-colors">8(900) 237-97-57</div>
+                </div>
+              </a>
+
+              {/* VK Мессенджер Max */}
+              <a
+                href="https://vk.me/89002379757"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 p-5 rounded-2xl border border-gray-100 hover:border-orange/30 hover:bg-orange-pale/30 transition-all duration-200 group"
+              >
+                <div className="w-12 h-12 bg-orange-pale rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange transition-all duration-200">
+                  <Icon name="MessagesSquare" size={20} className="text-orange group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-dark/40 uppercase tracking-wider mb-0.5">Мессенджер Max</div>
+                  <div className="font-semibold text-dark group-hover:text-orange transition-colors">8(900) 237-97-57</div>
+                </div>
+              </a>
             </div>
 
             {/* Форма обратной связи */}
@@ -945,60 +896,93 @@ export default function Index() {
               <h3 className="font-display font-bold text-xl text-dark mb-6">
                 Оставьте заявку
               </h3>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid grid-cols-2 gap-4">
+              {formStatus === "sent" ? (
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon name="CheckCircle" size={32} className="text-green-500" />
+                  </div>
+                  <p className="font-bold text-dark text-lg mb-2">Заявка отправлена!</p>
+                  <p className="text-dark/50 text-sm">Мы свяжемся с вами в ближайшее время.</p>
+                  <button
+                    onClick={() => setFormStatus("idle")}
+                    className="mt-6 text-orange text-sm font-semibold hover:underline"
+                  >
+                    Отправить ещё одну заявку
+                  </button>
+                </div>
+              ) : (
+                <form className="space-y-4" onSubmit={handleFormSubmit}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                        Имя
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ваше имя"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
+                        Телефон
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="+7 (___) ___-__-__"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                      Имя
+                      Город
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Ваше имя"
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
-                    />
+                    <select
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all appearance-none"
+                    >
+                      <option value="">Выберите город</option>
+                      <option>Сочи</option>
+                      <option>Москва</option>
+                      <option>Санкт-Петербург</option>
+                    </select>
                   </div>
+
                   <div>
                     <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                      Телефон
+                      Сообщение
                     </label>
-                    <input
-                      type="tel"
-                      placeholder="+7 (___) ___-__-__"
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all"
+                    <textarea
+                      rows={4}
+                      placeholder="Расскажите о ваших пожеланиях..."
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all resize-none"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                    Город
-                  </label>
-                  <select className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all appearance-none">
-                    <option value="">Выберите город</option>
-                    <option>Сочи</option>
-                    <option>Москва</option>
-                    <option>Санкт-Петербург</option>
-                  </select>
-                </div>
+                  {formStatus === "error" && (
+                    <p className="text-red-500 text-sm">Ошибка отправки. Попробуйте ещё раз.</p>
+                  )}
 
-                <div>
-                  <label className="block text-xs font-semibold text-dark/50 uppercase tracking-wider mb-2">
-                    Сообщение
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Расскажите о ваших пожеланиях..."
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange transition-all resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-orange text-white font-bold py-4 rounded-xl hover:bg-orange-dark transition-colors duration-200 text-base shadow-lg shadow-orange/20"
-                >
-                  Отправить заявку
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={formStatus === "sending"}
+                    className="w-full bg-orange text-white font-bold py-4 rounded-xl hover:bg-orange-dark transition-colors duration-200 text-base shadow-lg shadow-orange/20 disabled:opacity-60"
+                  >
+                    {formStatus === "sending" ? "Отправляем..." : "Отправить заявку"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
@@ -1021,13 +1005,13 @@ export default function Index() {
               </div>
               <p className="text-sm leading-relaxed mb-5">
                 Посуточная аренда квартир в Сочи, Москве и Санкт-Петербурге.
-                Проверенные апартаменты, поддержка 24/7.
+                Проверенные апартаменты, поддержка менеджера.
               </p>
               <div className="flex gap-3">
                 {[
-                  { icon: "Send", href: "https://t.me/orangeapart" },
+                  { icon: "Send", href: "https://t.me/orangeapartsochi" },
                   { icon: "Instagram", href: "#" },
-                  { icon: "Phone", href: "tel:+78001234567" },
+                  { icon: "Phone", href: "tel:+79002379757" },
                 ].map((s) => (
                   <a
                     key={s.icon}
@@ -1077,19 +1061,19 @@ export default function Index() {
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-sm">
                   <Icon name="Phone" size={14} className="text-orange mt-0.5 flex-shrink-0" />
-                  <a href="tel:+78001234567" className="hover:text-orange transition-colors">8 800 123-45-67</a>
+                  <a href="tel:+79002379757" className="hover:text-orange transition-colors">8(900) 237-97-57</a>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Icon name="Mail" size={14} className="text-orange mt-0.5 flex-shrink-0" />
-                  <a href="mailto:hello@orangeapart.ru" className="hover:text-orange transition-colors">hello@orangeapart.ru</a>
+                  <a href="mailto:orangeapart@mail.ru" className="hover:text-orange transition-colors">orangeapart@mail.ru</a>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <Icon name="MapPin" size={14} className="text-orange mt-0.5 flex-shrink-0" />
-                  <span>Москва, Тверская ул., 15</span>
+                  <Icon name="Send" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <a href="https://t.me/orangeapartsochi" target="_blank" rel="noopener noreferrer" className="hover:text-orange transition-colors">Telegram</a>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <Icon name="Clock" size={14} className="text-orange mt-0.5 flex-shrink-0" />
-                  <span>Поддержка 24/7</span>
+                  <Icon name="MessageCircle" size={14} className="text-orange mt-0.5 flex-shrink-0" />
+                  <a href="https://wa.me/79002379757" target="_blank" rel="noopener noreferrer" className="hover:text-orange transition-colors">WhatsApp</a>
                 </li>
               </ul>
             </div>
